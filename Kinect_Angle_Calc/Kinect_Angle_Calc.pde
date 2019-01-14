@@ -4,7 +4,9 @@ import processing.serial.*;
 //Generate a SimpleOpenNI object
 SimpleOpenNI kinect;
 
-Serial myPort;  // Create object from Serial class
+Serial myPort;       // Create object from Serial class
+Serial myPort2;
+
 
 void setup() {
   kinect = new SimpleOpenNI(this);
@@ -18,6 +20,7 @@ void setup() {
   ////Open the serial port
   //String portName = Serial.list()[1]; //change the 0 to a 1 or 2 etc. to match your port
   myPort = new Serial(this, "COM6", 9600);
+  myPort2 = new Serial(this, "COM7", 9600);
 }
 
 void draw() {  
@@ -122,7 +125,7 @@ void draw() {
 
       //Here I started to send information to the Arduino
 
-      if (leftHand.x <= -405) 
+      if (leftelbowAngle >90) 
        {                           //if we clicked in the window
           myPort.write('1');         //send a 1
           println("1");   
@@ -133,16 +136,37 @@ void draw() {
        }
        
        
-       if (leftHand.y <= -100) 
+       if (leftshoulderAngle > 90) 
        {                           //if we clicked in the window
-          myPort.write('2');         //send a 1
+          myPort.write('3');         //send a 1
+          println("3");   
+       } else 
+       {                           //otherwise
+         myPort.write('2');          //send a 0
+         println("2");
+       }
+       
+       
+       if (elbowAngle >90) 
+       {                           //if we clicked in the window
+          myPort2.write('1');         //send a 1
+          println("1");   
+       } else 
+       {                           //otherwise
+         myPort2.write('0');          //send a 0
+         println("0");
+       }
+       
+       
+       if (shoulderAngle > 90) 
+       {                           //if we clicked in the window
+          myPort2.write('2');         //send a 1
           println("2");   
        } else 
        {                           //otherwise
-         myPort.write('3');          //send a 0
+         myPort2.write('3');          //send a 0
          println("3");
        }
-       
        
     }
     //delay(50);
