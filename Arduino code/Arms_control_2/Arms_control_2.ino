@@ -1,6 +1,8 @@
-#include<Servo.h>
-Servo servoX;
-Servo servoY;
+#include <VarSpeedServo.h>
+
+//#include<Servo.h>
+VarSpeedServo servoX;
+VarSpeedServo servoY;
 int state;
 int posX = 0;
 int posY = 0;
@@ -36,7 +38,7 @@ void loop() {
     if (state == '3')
     {
       digitalWrite(13, HIGH);
-      posY = 110;
+      posY = 160;
       
     }
     if (state == '2')
@@ -45,8 +47,8 @@ void loop() {
       posY = 0;
     }
 
-    servoX.write(posX);
-    servoY.write(posY);
+    servoX.write(posX,25);
+    servoY.write(posY,25);
     
 
 
