@@ -7,181 +7,214 @@ SimpleOpenNI kinect;
 Serial myPort;  // Create object from Serial class
 
 void setup() {
- kinect = new SimpleOpenNI(this);
- kinect.enableRGB();
- kinect.enableDepth();
- kinect.enableUser();// because of the version this change
- size(640, 480);
- fill(255, 0, 0);
- kinect.setMirror(true);
- 
- ////Open the serial port
- //String portName = Serial.list()[1]; //change the 0 to a 1 or 2 etc. to match your port
- //myPort = new Serial(this, portName, 9600);
- 
+  kinect = new SimpleOpenNI(this);
+  kinect.enableRGB();
+  kinect.enableDepth();
+  kinect.enableUser();// because of the version this change
+  size(640, 480);
+  fill(255, 0, 0);
+  kinect.setMirror(true);
+
+  ////Open the serial port
+  //String portName = Serial.list()[1]; //change the 0 to a 1 or 2 etc. to match your port
+  myPort = new Serial(this, "COM6", 9600);
 }
 
 void draw() {  
   kinect.update();
   image(kinect.depthImage(), 0, 0);
-    image(kinect.rgbImage(),0,0,160,120);
+  image(kinect.rgbImage(), 0, 0, 160, 120);
 
- 
- 
+
+
   IntVector userList = new IntVector();
   kinect.getUsers(userList);
- 
+
   if (userList.size() > 0) {
-    
+
     int userId = userList.get(0);
-    
+
     //If we detect one user we have to draw it
     if ( kinect.isTrackingSkeleton(userId)) {
-    
+
       drawSkeleton(userId);
-      
-      // get the positions of the three joints of our arm
-     PVector rightHand = new PVector();
-     kinect.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_RIGHT_HAND,rightHand);
-     PVector rightElbow = new PVector();
-     kinect.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_RIGHT_ELBOW,rightElbow);
-     PVector rightShoulder = new PVector();
-     kinect.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_RIGHT_SHOULDER,rightShoulder);
-     // we need right hip to orient the shoulder angle
-     PVector rightHip = new PVector();
-     kinect.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_RIGHT_HIP,rightHip);
-     
-     // reduce our joint vectors to two dimensions
-     PVector rightHand2D = new PVector(rightHand.x, rightHand.y); 
-     PVector rightElbow2D = new PVector(rightElbow.x, rightElbow.y);
-     PVector rightShoulder2D = new PVector(rightShoulder.x,rightShoulder.y);
-     PVector rightHip2D = new PVector(rightHip.x, rightHip.y);
-     // calculate the axes against which we want to measure our angles
-     PVector torsoOrientation = PVector.sub(rightShoulder2D, rightHip2D); 
-     PVector upperArmOrientation = PVector.sub(rightElbow2D, rightShoulder2D);
-     
-     // calculate the angles between our joints
-     float shoulderAngle = angleOf(rightElbow2D, rightShoulder2D, torsoOrientation);
-     float elbowAngle = angleOf(rightHand2D,rightElbow2D,upperArmOrientation);
-     
-     //-------------------------------------------------------------------- for the left side
-      // get the positions of the three joints of our arm
-     PVector leftHand = new PVector();
-     kinect.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_LEFT_HAND,leftHand);
-     PVector leftElbow = new PVector();
-     kinect.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_LEFT_ELBOW,leftElbow);
-     PVector leftShoulder = new PVector();
-     kinect.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_LEFT_SHOULDER,leftShoulder);
-     // we need right hip to orient the shoulder angle
-     PVector leftHip = new PVector();
-     kinect.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_LEFT_HIP,leftHip);
-     
-     // reduce our joint vectors to two dimensions
-     PVector leftHand2D = new PVector(leftHand.x, leftHand.y); 
-     PVector leftElbow2D = new PVector(leftElbow.x, leftElbow.y);
-     PVector leftShoulder2D = new PVector(leftShoulder.x,leftShoulder.y);
-     PVector leftHip2D = new PVector(leftHip.x, leftHip.y);
-     // calculate the axes against which we want to measure our angles
-     PVector lefttorsoOrientation = PVector.sub(leftShoulder2D, leftHip2D); 
-     PVector leftupperArmOrientation = PVector.sub(leftElbow2D, leftShoulder2D);
-     
-     // calculate the angles between our joints
-     float leftshoulderAngle = angleOf(leftElbow2D, leftShoulder2D, lefttorsoOrientation);
-     float leftelbowAngle = angleOf(leftHand2D,leftElbow2D,leftupperArmOrientation);
-     
-     
-     
-     
-     // show the angles on the screen for debugging
-     fill(255,0,0);
-     scale(3);
-     text("right shoulder: " + int(shoulderAngle) + "\n" + " elbow: " + int(elbowAngle), 20, 20);
-          text("left shoulder: " + int(leftshoulderAngle) + "\n" + " elbow: " + int(leftelbowAngle), 20, 50);
 
-     //Here I started to send information to the Arduino
-                
-       //if (elbowAngle >= 50) 
-       // {                           //if we clicked in the window
-       //    myPort.write('1');         //send a 1
-       //    println("1");   
-       // } else 
-       // {                           //otherwise
-       //   myPort.write('0');          //send a 0
-       //   println("0");
-       // }   
-                  
+      // get the positions of the three joints of our arm
+      PVector rightHand = new PVector();
+      kinect.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_RIGHT_HAND, rightHand);
+      PVector rightElbow = new PVector();
+      kinect.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_RIGHT_ELBOW, rightElbow);
+      PVector rightShoulder = new PVector();
+      kinect.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, rightShoulder);
+      // we need right hip to orient the shoulder angle
+      PVector rightHip = new PVector();
+      kinect.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_RIGHT_HIP, rightHip);
+
+      // reduce our joint vectors to two dimensions
+      PVector rightHand2D = new PVector(rightHand.x, rightHand.y); 
+      PVector rightElbow2D = new PVector(rightElbow.x, rightElbow.y);
+      PVector rightShoulder2D = new PVector(rightShoulder.x, rightShoulder.y);
+      PVector rightHip2D = new PVector(rightHip.x, rightHip.y);
+      // calculate the axes against which we want to measure our angles
+      PVector torsoOrientation = PVector.sub(rightShoulder2D, rightHip2D); 
+      PVector upperArmOrientation = PVector.sub(rightElbow2D, rightShoulder2D);
+
+      // calculate the angles between our joints
+      float shoulderAngle = angleOf(rightElbow2D, rightShoulder2D, torsoOrientation);
+      float elbowAngle = angleOf(rightHand2D, rightElbow2D, upperArmOrientation);
+
+      //-------------------------------------------------------------------- for the left side
+      // get the positions of the three joints of our arm
+      PVector leftHand = new PVector();
+      kinect.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_LEFT_HAND, leftHand);
+      PVector leftElbow = new PVector();
+      kinect.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_LEFT_ELBOW, leftElbow);
+      PVector leftShoulder = new PVector();
+      kinect.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, leftShoulder);
+      // we need right hip to orient the shoulder angle
+      PVector leftHip = new PVector();
+      kinect.getJointPositionSkeleton(userId, SimpleOpenNI.SKEL_LEFT_HIP, leftHip);
+
+      // reduce our joint vectors to two dimensions
+      PVector leftHand2D = new PVector(leftHand.x, leftHand.y); 
+      PVector leftElbow2D = new PVector(leftElbow.x, leftElbow.y);
+      PVector leftShoulder2D = new PVector(leftShoulder.x, leftShoulder.y);
+      PVector leftHip2D = new PVector(leftHip.x, leftHip.y);
+      // calculate the axes against which we want to measure our angles
+      PVector lefttorsoOrientation = PVector.sub(leftShoulder2D, leftHip2D); 
+      PVector leftupperArmOrientation = PVector.sub(leftElbow2D, leftShoulder2D);
+
+      // calculate the angles between our joints
+      float leftshoulderAngle = angleOf(leftElbow2D, leftShoulder2D, lefttorsoOrientation);
+      float leftelbowAngle = angleOf(leftHand2D, leftElbow2D, leftupperArmOrientation);
+
+
+
+
+      // show the angles on the screen for debugging
+      fill(255, 0, 0);
+      scale(3);
+      text("right shoulder: " + int(shoulderAngle) + "\n" + " elbow: " + int(elbowAngle), 20, 20);
+      text("left shoulder: " + int(leftshoulderAngle) + "\n" + " elbow: " + int(leftelbowAngle), 20, 50);
+
+
+      //----------------------------------------------------------------------------------  hand controlled ball
+
+      //scale(0.5);
+      //PVector handPos = new PVector();
+      //kinect.getJointPositionSkeleton(userId,SimpleOpenNI.SKEL_RIGHT_HAND,handPos);
+
+      //PVector penHold = new PVector(handPos.x,handPos.y,handPos.z);
+      //println(handPos.x,handPos.y,handPos.z);
+      //fill(0,100);
+      //rect(0,0,width,height);
+      //fill(random(255),20,50);
+      //float diam = map(handPos.z,1600,800,50,200);
+      //ellipse(penHold.x,penHold.y,diam,diam);
+      ////ellipse(map(penHold.x,-50,250,0,width),map(penHold.y,-50,250,height,0),50,50);
+
+
+      println(leftHand.x,leftHand.y);
+     
+
+
+
+
+      //Here I started to send information to the Arduino
+
+      if (leftHand.x <= -405) 
+       {                           //if we clicked in the window
+          myPort.write('1');         //send a 1
+          println("1");   
+       } else 
+       {                           //otherwise
+         myPort.write('0');          //send a 0
+         println("0");
+       }
+       
+       
+       if (leftHand.y <= -100) 
+       {                           //if we clicked in the window
+          myPort.write('2');         //send a 1
+          println("2");   
+       } else 
+       {                           //otherwise
+         myPort.write('3');          //send a 0
+         println("3");
+       }
+       
+       
     }
-  
+    //delay(50);
   }
-
 }
 
 void drawSkeleton(int userId) {
- 
- stroke(0);
- strokeWeight(5);
- 
- kinect.drawLimb(userId, SimpleOpenNI.SKEL_HEAD, SimpleOpenNI.SKEL_NECK);
- kinect.drawLimb(userId, SimpleOpenNI.SKEL_NECK, SimpleOpenNI.SKEL_LEFT_SHOULDER);
- kinect.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, SimpleOpenNI.SKEL_LEFT_ELBOW);
- kinect.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_ELBOW, SimpleOpenNI.SKEL_LEFT_HAND);
- kinect.drawLimb(userId, SimpleOpenNI.SKEL_NECK, SimpleOpenNI.SKEL_RIGHT_SHOULDER);
- kinect.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, SimpleOpenNI.SKEL_RIGHT_ELBOW);
- kinect.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_ELBOW, SimpleOpenNI.SKEL_RIGHT_HAND);
- kinect.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, SimpleOpenNI.SKEL_TORSO);
- kinect.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, SimpleOpenNI.SKEL_TORSO);
- kinect.drawLimb(userId, SimpleOpenNI.SKEL_TORSO, SimpleOpenNI.SKEL_LEFT_HIP);
- kinect.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_HIP, SimpleOpenNI.SKEL_LEFT_KNEE);
- kinect.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_KNEE, SimpleOpenNI.SKEL_LEFT_FOOT);
- kinect.drawLimb(userId, SimpleOpenNI.SKEL_TORSO, SimpleOpenNI.SKEL_RIGHT_HIP);
- kinect.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_HIP, SimpleOpenNI.SKEL_RIGHT_KNEE);
- kinect.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_KNEE, SimpleOpenNI.SKEL_RIGHT_FOOT);
- kinect.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_HIP, SimpleOpenNI.SKEL_LEFT_HIP);
- 
- noStroke();
- 
- fill(255,0,0);
- drawJoint(userId, SimpleOpenNI.SKEL_HEAD); 
- drawJoint(userId, SimpleOpenNI.SKEL_NECK);
- drawJoint(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER);
- drawJoint(userId, SimpleOpenNI.SKEL_LEFT_ELBOW);
- drawJoint(userId, SimpleOpenNI.SKEL_NECK);
- drawJoint(userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER);
- drawJoint(userId, SimpleOpenNI.SKEL_RIGHT_ELBOW);
- drawJoint(userId, SimpleOpenNI.SKEL_TORSO);
- drawJoint(userId, SimpleOpenNI.SKEL_LEFT_HIP);
- drawJoint(userId, SimpleOpenNI.SKEL_LEFT_KNEE);
- drawJoint(userId, SimpleOpenNI.SKEL_RIGHT_HIP);
- drawJoint(userId, SimpleOpenNI.SKEL_LEFT_FOOT);
- drawJoint(userId, SimpleOpenNI.SKEL_RIGHT_KNEE);
- drawJoint(userId, SimpleOpenNI.SKEL_LEFT_HIP);
- drawJoint(userId, SimpleOpenNI.SKEL_RIGHT_FOOT);
- drawJoint(userId, SimpleOpenNI.SKEL_RIGHT_HAND);
- drawJoint(userId, SimpleOpenNI.SKEL_LEFT_HAND);
+
+  stroke(0);
+  strokeWeight(5);
+
+  kinect.drawLimb(userId, SimpleOpenNI.SKEL_HEAD, SimpleOpenNI.SKEL_NECK);
+  kinect.drawLimb(userId, SimpleOpenNI.SKEL_NECK, SimpleOpenNI.SKEL_LEFT_SHOULDER);
+  kinect.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, SimpleOpenNI.SKEL_LEFT_ELBOW);
+  kinect.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_ELBOW, SimpleOpenNI.SKEL_LEFT_HAND);
+  kinect.drawLimb(userId, SimpleOpenNI.SKEL_NECK, SimpleOpenNI.SKEL_RIGHT_SHOULDER);
+  kinect.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, SimpleOpenNI.SKEL_RIGHT_ELBOW);
+  kinect.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_ELBOW, SimpleOpenNI.SKEL_RIGHT_HAND);
+  kinect.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER, SimpleOpenNI.SKEL_TORSO);
+  kinect.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER, SimpleOpenNI.SKEL_TORSO);
+  kinect.drawLimb(userId, SimpleOpenNI.SKEL_TORSO, SimpleOpenNI.SKEL_LEFT_HIP);
+  kinect.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_HIP, SimpleOpenNI.SKEL_LEFT_KNEE);
+  kinect.drawLimb(userId, SimpleOpenNI.SKEL_LEFT_KNEE, SimpleOpenNI.SKEL_LEFT_FOOT);
+  kinect.drawLimb(userId, SimpleOpenNI.SKEL_TORSO, SimpleOpenNI.SKEL_RIGHT_HIP);
+  kinect.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_HIP, SimpleOpenNI.SKEL_RIGHT_KNEE);
+  kinect.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_KNEE, SimpleOpenNI.SKEL_RIGHT_FOOT);
+  kinect.drawLimb(userId, SimpleOpenNI.SKEL_RIGHT_HIP, SimpleOpenNI.SKEL_LEFT_HIP);
+
+  noStroke();
+
+  fill(255, 0, 0);
+  drawJoint(userId, SimpleOpenNI.SKEL_HEAD); 
+  drawJoint(userId, SimpleOpenNI.SKEL_NECK);
+  drawJoint(userId, SimpleOpenNI.SKEL_LEFT_SHOULDER);
+  drawJoint(userId, SimpleOpenNI.SKEL_LEFT_ELBOW);
+  drawJoint(userId, SimpleOpenNI.SKEL_NECK);
+  drawJoint(userId, SimpleOpenNI.SKEL_RIGHT_SHOULDER);
+  drawJoint(userId, SimpleOpenNI.SKEL_RIGHT_ELBOW);
+  drawJoint(userId, SimpleOpenNI.SKEL_TORSO);
+  drawJoint(userId, SimpleOpenNI.SKEL_LEFT_HIP);
+  drawJoint(userId, SimpleOpenNI.SKEL_LEFT_KNEE);
+  drawJoint(userId, SimpleOpenNI.SKEL_RIGHT_HIP);
+  drawJoint(userId, SimpleOpenNI.SKEL_LEFT_FOOT);
+  drawJoint(userId, SimpleOpenNI.SKEL_RIGHT_KNEE);
+  drawJoint(userId, SimpleOpenNI.SKEL_LEFT_HIP);
+  drawJoint(userId, SimpleOpenNI.SKEL_RIGHT_FOOT);
+  drawJoint(userId, SimpleOpenNI.SKEL_RIGHT_HAND);
+  drawJoint(userId, SimpleOpenNI.SKEL_LEFT_HAND);
 }
 
 void drawJoint(int userId, int jointID) { 
- PVector joint = new PVector();
- 
- float confidence = kinect.getJointPositionSkeleton(userId, jointID,
-joint);
- if(confidence < 0.5){
-   return; 
- }
- PVector convertedJoint = new PVector();
- kinect.convertRealWorldToProjective(joint, convertedJoint);
- ellipse(convertedJoint.x, convertedJoint.y, 5, 5);
+  PVector joint = new PVector();
+
+  float confidence = kinect.getJointPositionSkeleton(userId, jointID, 
+    joint);
+  if (confidence < 0.5) {
+    return;
+  }
+  PVector convertedJoint = new PVector();
+  kinect.convertRealWorldToProjective(joint, convertedJoint);
+  ellipse(convertedJoint.x, convertedJoint.y, 5, 5);
 }
 
 //Generate the angle
- float angleOf(PVector one, PVector two, PVector axis){
- PVector limb = PVector.sub(two, one);
- return degrees(PVector.angleBetween(limb, axis));
+float angleOf(PVector one, PVector two, PVector axis) {
+  PVector limb = PVector.sub(two, one);
+  return degrees(PVector.angleBetween(limb, axis));
 }
 
 //Calibration not required
 
-void onNewUser(SimpleOpenNI kinect, int userID){
+void onNewUser(SimpleOpenNI kinect, int userID) {
   println("Start skeleton tracking");
   kinect.startTrackingSkeleton(userID);
 }
