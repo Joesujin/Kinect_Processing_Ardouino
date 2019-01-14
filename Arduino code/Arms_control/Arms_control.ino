@@ -1,7 +1,7 @@
-//#include<Servo.h>
-#include <VarSpeedServo.h>
-VarSpeedServo servoX;
-VarSpeedServo servoY;
+#include<Servo.h>
+//#include <VarSpeedServo.h>
+Servo servoX;
+Servo servoY;
 int state;
 int posX = 0;
 int posY = 0;
@@ -46,8 +46,8 @@ void loop() {
       posY = 0;
     }
 
-    servoX.slowmove(posX,25);
-    servoY.slowmove(posY,25);
+    servoX.write(posX);
+    servoY.write(posY);
     
 
 

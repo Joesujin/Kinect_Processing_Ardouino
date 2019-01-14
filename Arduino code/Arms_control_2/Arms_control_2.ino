@@ -24,13 +24,13 @@ void loop() {
     if (state == '1')
     {
       digitalWrite(13, HIGH);
-      posX = 0;
+      posX = 110;
       
     }
     if (state == '0')
     {
       digitalWrite(13, LOW);
-      posX = 110;
+      posX = 0;
     }
 
     if (state == '3')
